@@ -236,7 +236,7 @@ if ( !class_exists( 'avia_sc_masonry_entries' ) )
 				$img_template 		= $this->update_template("img_fakeArg", "{{img_fakeArg}}");
 				$template 			= $this->update_template("title", "{{title}}");
 				$content 			= $this->update_template("content", "{{content}}");
-				
+
 				$thumbnail = isset($params['args']['id']) ? wp_get_attachment_image($params['args']['id']) : "";
 				
 		
@@ -486,9 +486,9 @@ if ( !class_exists( 'avia_masonry' ) )
 			$auto 		= strpos($this->atts['size'], 'masonry') !== false ? true : false;
 			$manually	= strpos($this->atts['size'], 'manually') !== false ? true : false;
 			$defaults 	= array('ID'=>'', 
-								'thumb_ID'=>'', 
+								'thumb_ID'=>'',
 								'title' =>'', 
-								'url' => '',  
+								'url' => '',
 								'class' => array(),  
 								'date' => '', 
 								'excerpt' => '', 
@@ -579,25 +579,39 @@ if ( !class_exists( 'avia_masonry' ) )
 				$items .= 		"<div class='av-inner-masonry-sizer'></div>"; //responsible for the size
 				$items .=		"<figure class='av-inner-masonry main_color'>";
 				$items .= 			$bg;
-				
+
 				//title and excerpt
 				if($this->atts['caption_elements'] != 'none' || !empty($text_add))
 				{
+					$post_details = geodir_get_post_info($entry['ID']);
+					// print_r($post_details);
 					$items .=	"<figcaption class='av-inner-masonry-content site-background'><div class='av-inner-masonry-content-pos'><div class='avia-arrow'></div>".$text_before;
-					
 					if(strpos($this->atts['caption_elements'], 'title') !== false){
                         $markup = avia_markup_helper(array('context' => 'entry_title','echo'=>false, 'id'=>$entry['ID'], 'custom_markup'=>$this->atts['custom_markup']));
 						$items .=	"<h3 class='av-masonry-entry-title entry-title' {$markup}>{$the_title}</h3>";
 					}
+					$items .=	$post_details->post_address;
+					$items .=	"<br>";
+
+					$items .=	$post_details->post_city;
+					$items .=	"<br>";
+					$items .=   $post_details->geodir_contact;
+					$items .=	"<br>";
+					$items .=   $post_details->overall_rating;
+					$items .=	"<br>";
+					$items .=   $post_details->ratings;
+
 
 					if(strpos($this->atts['caption_elements'], 'excerpt') !== false && !empty($content)){
                         $markup = avia_markup_helper(array('context' => 'entry_content','echo'=>false, 'id'=>$entry['ID'], 'custom_markup'=>$this->atts['custom_markup']));
 						$items .=	"<div class='av-masonry-entry-content entry-content' {$markup}>{$content}</div>";
 					}
+
 					$items .=	$text_after."</div></figcaption>";
+
 				}
-				$items .= 		"</figure>";
-				$items .= 	"</{$html_tags[1]}><!--end av-masonry entry-->";					
+				$items .= 	"</figure>";
+				$items .= 	"</{$html_tags[1]}><!--end av-masonry entry-->";
 			}
 			
 			//if its an ajax call return the items only without container
@@ -707,12 +721,12 @@ if ( !class_exists( 'avia_masonry' ) )
 				$this->loop[$key]['class'] 			= get_post_class("av-masonry-entry isotope-item", $id); 
 				$this->loop[$key]['content']		= $entry->post_excerpt;
                 $this->loop[$key]['description']	= !empty($entry->post_content) ? $entry->post_content : $entry->post_excerpt;
-				
+
 				if(empty($this->loop[$key]['content']))
 				{
 					$this->loop[$key]['content'] 	= avia_backend_truncate($entry->post_content, apply_filters( 'avf_masonry_excerpt_length' , 60) , apply_filters( 'avf_masonry_excerpt_delimiter' , " "), "…", true, '');
 				}
-				
+
 				//post type specific
 				switch($entry->post_type)
 				{
